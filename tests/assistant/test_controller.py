@@ -34,10 +34,8 @@ def test_complete_controller_and_real_deviations(bundle,role):
             assert view.value.team_a==expected
         else:
             assert view.value==c.solution.get_value(c.session.history)
-        if team=='A':
-            assert tuple(x.probability for x in view.options)==rec.probabilities
-        else:
-            assert all(x.probability is None for x in view.options)
+        assert tuple(x.probability for x in view.options)==rec.probabilities
+        if team=='B':
             off_policy |= any(p==0 for p in rec.probabilities)
         advance(c,nonoptimal=True)
     assert off_policy
@@ -64,6 +62,17 @@ def test_hidden_opponent_action_cannot_enter_controller(bundle,stage):
         observed.append(c.view())
         with pytest.raises(IllegalAction): c.record_opponent(secret,c.context)
     assert all(v==observed[0] for v in observed)
+
+    # Opponent hints after our commitment must retain the original matrix
+    # strategy, for EVERY possible own action (including off-policy actions).
+    expected = s.get_recommendation(h, 'B')
+    for own in s.rules.legal_actions(s.get_state(h).position, 'A'):
+        c = CaptainController(bundle, CaptainSession('A', h, session_id='hint'))
+        c.confirm_own(own, c.context)
+        view = c.view()
+        assert view.mode == 'reveal'
+        assert tuple(x.id for x in view.options) == expected.actions
+        assert tuple(x.probability for x in view.options) == expected.probabilities
 
 def test_sampling_requires_confirmation_and_does_not_mutate(bundle):
     c=CaptainController.start(bundle,'B')  # Our defender ban.

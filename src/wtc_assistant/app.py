@@ -115,6 +115,14 @@ def setup():
         with right:
             st.download_button('Скачать CSV-шаблон с именами', '\ufeff'+export_csv(), 'wtc-gp-template.csv', 'text/csv', key='template')
             st.caption('27 строк · 243 оценки от 0 до 20. Имена находятся в том же файле.')
+            st.link_button('Открыть шаблон в Google Таблицах',
+                           'https://docs.google.com/spreadsheets/d/1u2BYlXeiAG3vN8tUl4jUcojon-FQ2IpZkKeL67KjphQ/edit?usp=sharing')
+            st.caption('Сначала выберите «Файл → Создать копию» и заполните свою копию. '
+                       'Не меняйте ID и структуру столбцов; дробные GP записывайте с точкой, например 10.5.')
+            st.caption('Когда всё заполнено, откройте лист с оценками и выберите '
+                       '«Файл → Скачать → CSV (текущий лист)» — формат с разделителями-запятыми (.csv). '
+                       'Затем загрузите скачанный файл слева и нажмите «Загрузить таблицу». '
+                       'Экспортируется только выбранный лист, а не вся Google-таблица.')
             if st.button('Открыть демонстрационные данные', key='demo'):
                 st.session_state.config = Configuration(benchmark_payoffs(), Names.defaults())
                 st.session_state.pop('bundle', None)
@@ -217,6 +225,12 @@ def play(controller):
                     st.info(f'Случайно предложено: {name}. Решение ещё не записано; подтвердите или выберите вручную.')
             else:
                 key = f'choice_{view.context}'
+                st.dataframe([{'Действие соперника': x.name,
+                               'В стратегии': '✓' if x.probability > 0 else '—',
+                               'Вероятность': x.percent} for x in view.options], hide_index=True)
+                st.caption('✓ — действие входит в выбранную равновесную стратегию соперника.')
+                if view.simultaneous:
+                    st.caption('Вероятности рассчитаны до раскрытия обоих выборов и не зависят от нашего зафиксированного хода. Это не предсказание фактического выбора.')
                 st.caption('Запишите фактическое действие соперника. Оно может отличаться от равновесной стратегии.')
             labels = {x.id: x.name for x in view.options}
             selected = st.selectbox('Фактический выбор', list(labels), index=None,

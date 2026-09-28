@@ -86,9 +86,11 @@ class CaptainController:
         team = 'A' if mode == 'own' else 'B'
         rec = solution.get_recommendation(session.history, team)
         values = solution.get_action_values(session.history, 'A') if mode == 'own' else ()
-        display = percentages(rec.probabilities) if mode == 'own' else ()
+        # Both strategies come from the same public information set, never
+        # from a best response to our private committed action.
+        display = percentages(rec.probabilities)
         options = tuple(ActionOption(a, self._name(p.stage, team, a),
-                       rec.probabilities[i] if mode == 'own' else None,
+                       rec.probabilities[i],
                        display[i] if display else None,
                        values[i].expected_a if values else None,
                        values[i].guarantee_for_team if values else None)

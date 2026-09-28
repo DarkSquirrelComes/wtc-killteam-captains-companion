@@ -35,6 +35,10 @@ def test_full_ui_pairing_and_undo(app,role):
     while app.session_state['controller'].view().mode!='complete':
         c=app.session_state['controller']; view=c.view()
         assert app.button(key='confirm').disabled  # No automatically chosen opponent action.
+        if view.mode in ('opponent', 'reveal'):
+            hints = next(d.value for d in app.dataframe if 'Действие соперника' in d.value.columns)
+            assert list(hints['Вероятность']) == [x.percent for x in view.options]
+            assert list(hints['В стратегии']) == ['✓' if x.probability > 0 else '—' for x in view.options]
         # AppTest select_index supplies a rendered label; our widget's actual
         # values are stable integer IDs, so set that value explicitly.
         app.selectbox(key=f'choice_{view.context}').set_value(view.options[0].id).run()
