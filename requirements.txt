@@ -1,0 +1,3 @@
+# Community Cloud installs the src-layout package, including its metadata.
+.
+streamlit==1.64.0

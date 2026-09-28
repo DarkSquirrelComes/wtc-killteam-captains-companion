@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wtc-solver"
+version = "0.1.0"
+description = "Exact rational equilibrium solver for WTC 3x3 pairing"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8", "hypothesis==6.142.4"]
+ui = ["streamlit>=1.40,<2"]
+
+[project.scripts]
+wtc-solver = "wtc_solver.cli:main"
+wtc-assistant = "wtc_assistant.launch:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = ["full: complete game equilibrium and serialization checks"]
