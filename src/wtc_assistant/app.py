@@ -1,5 +1,6 @@
 """Streamlit rendering only. Game transitions and policy values belong to the controller."""
 import os
+from importlib.metadata import version
 from pathlib import Path
 from random import Random
 import streamlit as st
@@ -254,5 +255,7 @@ def main():
     except (ValueError, OSError, UnicodeError) as exc:
         st.error(f'Не удалось выполнить действие: {exc}')
         st.caption('При ошибке автосохранения новое решение не фиксируется. Исправьте ввод или восстановите последнее автосохранение.')
+    st.divider()
+    st.caption(f'WTC Captain · v{version("wtc-solver")} · «Первый щит»')
 
 if __name__ == '__main__': main()
