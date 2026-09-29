@@ -2,6 +2,9 @@
 from dataclasses import dataclass
 from wtc_solver import InvalidData, Payoffs
 
+DEFAULT_MISSIONS = ('Secure', 'Loot', 'Transmission', 'Orb', 'Stake Claim',
+                    'Energy Cells', 'Download', 'Data', 'Reboot')
+
 @dataclass(frozen=True, slots=True)
 class Names:
     players_a: tuple[str, ...]
@@ -26,7 +29,7 @@ class Names:
         return cls(tuple(f'Наш игрок {i+1}' for i in range(3)),
                    tuple(f'Соперник {i+1}' for i in range(3)),
                    tuple(f'Стол {i+1}' for i in range(3)),
-                   tuple(f'Миссия {i+1}' for i in range(9)))
+                   DEFAULT_MISSIONS)
 
     def to_data(self):
         return {k: list(getattr(self, k)) for k in ('players_a', 'players_b', 'tables', 'missions')}

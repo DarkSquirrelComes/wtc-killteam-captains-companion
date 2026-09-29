@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wtc-solver"
-version = "0.2.0"
+version = "0.2.1"
 description = "Exact rational equilibrium solver for WTC 3x3 pairing"
 requires-python = ">=3.12"
 dependencies = []

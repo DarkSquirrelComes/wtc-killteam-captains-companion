@@ -10,6 +10,8 @@ from .controller import CaptainController
 from .data import export_csv, export_json, import_data
 from .import_export import Autosave, SessionAutosave, export_bundle, export_session, import_bundle, import_legacy_policies, import_session
 from .solutions import calculate
+from .draft import Draft
+from . import editor
 
 def gp(value): return f'{float(value):.2f}'
 
@@ -103,6 +105,17 @@ def edit_names(config, active=None):
 def setup():
     st.title('Помощник капитана')
     st.write('Загрузите оценки, рассчитайте обе роли и пройдите паринг с рекомендациями на каждом шаге.')
+    config = st.session_state.get('config')
+    editor_label = 'Редактировать таблицу на сайте' if config else 'Заполнить на сайте'
+    if st.button(editor_label,key='open_editor',type='primary'):
+        if config:
+            candidate = Draft.from_config(config)
+            if 'input_draft' in st.session_state: editor.commit(candidate)
+            else: st.session_state.input_draft = candidate
+        elif 'input_draft' not in st.session_state:
+            st.session_state.input_draft=Draft(Names.defaults())
+        st.session_state.editor_open=True
+        st.rerun()
     with st.container(border=True):
         st.subheader('1 · Таблица ожидаемых GP')
         left, right = st.columns([3,2])
@@ -265,11 +278,12 @@ def main():
     try:
         sidebar()
         if st.session_state.get('controller'): play(st.session_state.controller)
+        elif st.session_state.get('editor_open'): editor.render()
         else: setup()
     except (ValueError, OSError, UnicodeError) as exc:
         st.error(f'Не удалось выполнить действие: {exc}')
         st.caption('При ошибке автосохранения новое решение не фиксируется. Исправьте ввод или восстановите последнее автосохранение.')
     st.divider()
-    st.caption(f'WTC Captain · v{version("wtc-solver")} · «Первый щит»')
+    st.caption(f'WTC Captain · v{version("wtc-solver")} · «Второй кабан»')
 
 if __name__ == '__main__': main()
